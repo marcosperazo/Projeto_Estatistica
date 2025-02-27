@@ -16,7 +16,9 @@ tinytex::install_tinytex(force = TRUE)
 ![Plataforma RStudio instalada localmente](Acesso_RStudio.png)
 
 ### 2 - Escolha uma base de dados e justificativa
-A base escolhida foi a de frota veicular do Brasil nos últimos 20 anos, separada pela unidade da federação e tipo de veículo. 
+Foi escolhida a base sobre a frota veicular do Brasil no período de 2003 até 2023, obtida no link https://basedosdados.org/dataset/61d592ca-5aec-4f66-b8eb-f7b894a29b66?table=75489368-064f-4de3-a6dc-20ba4d0fe7bf, onde a quantidade de veículos está separada por tipo de veículo e unidade da federação.
+
+
 Analisando os dados ao longo de duas décadas, é possível identificar tendências e mudanças significativas no uso e na distribuição dos veículos no Brasil. Isso pode revelar padrões de crescimento ou declínio em diferentes tipos de veículos e nas diversas unidades da federação.
 Esses dados são cruciais para a formulação de políticas públicas. Informações detalhadas sobre a frota veicular ajudam governos locais e federais a tomar decisões informadas sobre infraestrutura, transporte público, leis de trânsito e outras áreas relacionadas.
 O tipo e o número de veículos em circulação afetam diretamente o meio ambiente. Compreender essas mudanças pode auxiliar na criação de políticas ambientais, como incentivos para veículos elétricos ou híbridos, e outras medidas para reduzir a emissão de poluentes.
@@ -29,10 +31,37 @@ Pesquisadores acadêmicos podem usar esses dados para conduzir estudos detalhado
 
 
 ### 4 - Carregue a base para o RStudio e comprove o carregamento tirando um print da tela com a base escolhida presente na área "Ambiente"/Enviroment. Detalhe como você realizou o carregamento dos dados.
+
+```{r Carregamento da base da frota de veículos, echo=TRUE}
+frota <- readr::read_csv("br_denatran_frota_uf_tipo.csv")
+```
+
+![Base carregada](Base_carregada.png)
+
+
 ### 5 - Instale e carregue os pacotes de R necessários para sua análise (mostre o código necessário):
-tidyverse
-ggplot
-summarytools
+
+
+```{r instalando pacotes, echo=TRUE}
+install.packages('tidyverse')
+install.packages('dlookr')
+install.packages('summarytools')
+install.packages('readxl')
+install.packages('knitr')
+
+```
+
+```{r importando bibliotecas, echo = TRUE}
+library(tidyverse)
+library(dlookr)
+library(summarytools)
+library(readxl)
+library(knitr)
+```
+
+
+kable(head(frota))
+
 ### 6 - Escolha outros pacotes necessários, aponte sua necessidade e instale e carregue (mostrando o código necessário).
 ### 7 - Aplique uma função em R que seja útil para sua análise e mostre.
 ### 8 - Escolha uma variável de seu banco de dados e calcule:
@@ -66,4 +95,4 @@ You can also embed plots, for example:
 plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
