@@ -6,6 +6,7 @@ install.packages('datatable')
 install.packages('readxl')
 install.packages('rvest')
 install.packages('tinytex')
+tinytex::install_tinytex(force = TRUE)
 tinytex::install_tinytex()
 
 library(tinytex)
