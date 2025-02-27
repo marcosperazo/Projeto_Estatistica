@@ -33,10 +33,4 @@ print(automoveis)
 
 
 
-aguas <- readr::read_csv("br_ana_reservatorios_sin.csv")
-petroleo <- readr::read_csv2("anuario-2024-dados_abertos-tabela1-2.csv")
-typeof(
-  petroleo
-)
-petroleo2 <- tibble::as_tibble(petroleo)
 
