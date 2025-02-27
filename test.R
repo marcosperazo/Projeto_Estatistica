@@ -5,11 +5,17 @@ install.packages('tidyverse')
 install.packages('datatable')
 install.packages('readxl')
 install.packages('rvest')
+install.packages('tinytex')
+tinytex::install_tinytex()
+
+library(tinytex)
 library(tidyverse)
 library(rvest)
 library(data.table)
 library(readxl)
 renv::snapshot()
+renv::restore()
+
 
 # Evolução da frota de veículos por unidade da federação e tipo de veículo
 frota <- readr::read_csv("br_denatran_frota_uf_tipo.csv")
