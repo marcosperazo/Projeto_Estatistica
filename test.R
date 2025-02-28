@@ -22,6 +22,8 @@ library(ggplot2)
 renv::snapshot()
 renv::restore()
 
+update.packages()
+
 
 # Evolução da frota de veículos por unidade da federação e tipo de veículo
 frota <- readr::read_csv("br_denatran_frota_uf_tipo.csv")
@@ -34,41 +36,35 @@ frota_sp <- frota %>%
   select(-mes, -sigla_uf)
 
 
+
+
 frota_sp
 
-# Filtrar os dados para incluir apenas 'automovel'
-nova_frota_automovel <- frota_sp %>%
-  filter(tipo_veiculo == "automovel")
+frota_sp_ajustada <- frota_sp %>%
+  mutate(
+    automoveis = ifelse(tipo_veiculo == "automovel", quantidade, 0),
+    motocicletas = ifelse(tipo_veiculo %in% c("motocicleta", "motoneta"), quantidade, 0),
+    caminhoes = ifelse(tipo_veiculo %in% c("caminhao", "caminhonete", "caminhoneta"), quantidade, 0)
+  ) %>%
+  select(ano, automoveis, motocicletas, caminhoes) %>%
+  group_by(ano) %>%
+  summarise(
+    automoveis = sum(automoveis),
+    motocicletas = sum(motocicletas),
+    caminhoes = sum(caminhoes)
+  )
 
-# Criar o gráfico
-ggplot(data = nova_frota_automovel, aes(x = ano, y = quantidade)) +
+print(frota_sp_ajustada)
+
+
+
+
+ggplot(frota_sp_ajustada, aes(x = ano, y = automoveis)) +
   geom_line() +
-  labs(title = "Quantidade Total de Automóveis por Ano",
+  geom_point() +
+  labs(title = "Frota de Automóveis por Ano",
        x = "Ano",
-       y = "Quantidade Total") +
-  theme_minimal()
-
-
-
-
-
-
-# Filtrando os automoveis
-automoveis <- frota %>%
-  filter(tipo_veiculo == "automovel", ano == 2023, mes == 12)
-
-# Classificando pela quantidade
-automoveis <- automoveis %>%
-  arrange(desc(quantidade))
-
-# Criar uma nova coluna 'margem_percentual'
-automoveis <- automoveis %>%
-  mutate(margem_percentual = (quantidade / sum(quantidade)) * 100)
-
-
-# Exibindo a nova tabela automoveis
-print(automoveis)
-
+       y = "Frota de Automóveis")
 
 
 

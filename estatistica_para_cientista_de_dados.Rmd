@@ -18,6 +18,7 @@ tinytex::install_tinytex(force = TRUE)
 ### 2 - Escolha uma base de dados e justificativa
 Foi escolhida a base sobre a frota veicular do Brasil no período de 2003 até 2023, obtida no link https://basedosdados.org/dataset/61d592ca-5aec-4f66-b8eb-f7b894a29b66?table=75489368-064f-4de3-a6dc-20ba4d0fe7bf, onde a quantidade de veículos está separada por tipo de veículo e unidade da federação.
 
+### 3 - Explique qual o motivo para a escolha dessa base e explique os resultados esperados através da análise.
 
 Analisando os dados ao longo de duas décadas, é possível identificar tendências e mudanças significativas no uso e na distribuição dos veículos no Brasil. Isso pode revelar padrões de crescimento ou declínio em diferentes tipos de veículos e nas diversas unidades da federação.
 Esses dados são cruciais para a formulação de políticas públicas. Informações detalhadas sobre a frota veicular ajudam governos locais e federais a tomar decisões informadas sobre infraestrutura, transporte público, leis de trânsito e outras áreas relacionadas.
@@ -25,10 +26,7 @@ O tipo e o número de veículos em circulação afetam diretamente o meio ambien
 A análise pode fornecer insights valiosos para a indústria automobilística, desde fabricantes até concessionárias. Compreender as preferências regionais e as mudanças ao longo do tempo pode ajudar no planejamento de produção e marketing.
 Ao analisar os tipos de veículos e suas distribuições, é possível desenvolver estratégias para melhorar a segurança no trânsito. Diferentes tipos de veículos podem estar associados a diferentes níveis de risco, e essa informação é vital para a implementação de medidas preventivas.
 Pesquisadores acadêmicos podem usar esses dados para conduzir estudos detalhados em áreas como economia, sociologia, urbanismo e meio ambiente, contribuindo para o avanço do conhecimento.
-
-### 3 - Explique qual o motivo para a escolha dessa base e explique os resultados esperados através da análise.
-
-
+A ideia inicial é de analisar a frota de automóveis, motocicletas e caminhões do estado de São Paulo durante os 20 anos da base, de 2003 até 2023. O resultado esperado seria uma maior participação das motocicletas na frota, em função da maior lentidão ao se locomover dos automóveis por conta dos congestionamentos que acontecem com uma frequência alta, principalmente na Grande São Paulo. Teoricamente, a motocicleta se mostraria mais eficiente nesse cenário.
 
 ### 4 - Carregue a base para o RStudio e comprove o carregamento tirando um print da tela com a base escolhida presente na área "Ambiente"/Enviroment. Detalhe como você realizou o carregamento dos dados.
 
@@ -38,35 +36,38 @@ frota <- readr::read_csv("br_denatran_frota_uf_tipo.csv")
 
 ![Base carregada](Base_carregada.png)
 
-
 ### 5 - Instale e carregue os pacotes de R necessários para sua análise (mostre o código necessário):
-
 
 ```{r instalando pacotes, echo=TRUE}
 install.packages('tidyverse')
-install.packages('dlookr')
-install.packages('summarytools')
-install.packages('readxl')
-install.packages('knitr')
 install.packages('ggplot2')
-
+install.packages('summarytools')
 ```
 
 ```{r importando bibliotecas, echo = TRUE}
 library(tidyverse)
-library(dlookr)
-library(summarytools)
-library(readxl)
-library(knitr)
 library(ggplot2)
-```
-
-
-```{r visualizando frota}
-kable(head(frota))
+library(summarytools)
 ```
 
 ### 6 - Escolha outros pacotes necessários, aponte sua necessidade e instale e carregue (mostrando o código necessário).
+
+```{r instalando outros pacotes, echo=TRUE}
+install.packages('dlookr')
+install.packages('readxl')
+install.packages('knitr')
+```
+
+```{r importando outras bibliotecas, echo = TRUE}
+library(dlookr)
+library(readxl)
+library(knitr)
+```
+
+```{r frota, echo=FALSE}
+kable(head(frota))
+```
+
 ### 7 - Aplique uma função em R que seja útil para sua análise e mostre.
 
 ```{r Frota do estado de São Paulo, echo=TRUE}
@@ -75,27 +76,35 @@ frota_sp <- frota %>%
   select(-mes, -sigla_uf)
 ```
 
-
-```{r visualizando frota}
+```{r frota de SP, echo=FALSE}
 kable(head(frota_sp))
 ```
 
-install.packages("ggplot2")
-library(ggplot2)
+```{r Frota ajustada, echo=TRUE}
+frota_sp_ajustada <- frota_sp %>%
+  mutate(
+    automoveis = ifelse(tipo_veiculo == "automovel", quantidade, 0),
+    motocicletas = ifelse(tipo_veiculo %in% c("motocicleta", "motoneta"), quantidade, 0),
+    caminhoes = ifelse(tipo_veiculo %in% c("caminhao", "caminhonete", "caminhoneta"), quantidade, 0)
+  ) %>%
+  select(ano, automoveis, motocicletas, caminhoes) %>%
+  group_by(ano) %>%
+  summarise(
+    automoveis = sum(automoveis),
+    motocicletas = sum(motocicletas),
+    caminhoes = sum(caminhoes)
+  )
+```
+
+```{r frota de SP ajustada , echo=FALSE}
+kable(head(frota_sp_ajustada))
+```
 
 
 
 
 
 
-ggplot(data = frota_sp, aes(x = factor(ano), y = tipo_veiculo, fill = quantidade_total)) +
-  geom_tile() +
-  labs(title = "Distribuição de Quantidade por Tipo de Veículo e Ano",
-       x = "Ano",
-       y = "Tipo de Veículo",
-       fill = "Quantidade Total") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ### 8 - Escolha uma variável de seu banco de dados e calcule:
 a média para todos os eventos
@@ -110,22 +119,5 @@ os quantis: 25% e 75%
 Assim que terminar, salve o seu arquivo PDF e poste no Moodle. Utilize o seu nome para nomear o arquivo, identificando também a disciplina no seguinte formato: “nomedoaluno_nomedadisciplina_pd.PDF”.
 
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
 
