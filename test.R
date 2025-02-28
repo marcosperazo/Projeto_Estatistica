@@ -7,6 +7,8 @@ install.packages('readxl')
 install.packages('rvest')
 install.packages('tinytex')
 install.packages("ggplot2")
+install.packages('scales')
+install.packages('dplyr')
 tinytex::install_tinytex(force = TRUE)
 tinytex::install_tinytex()
 
@@ -18,7 +20,8 @@ library(data.table)
 library(readxl)
 library(dplyr)
 library(ggplot2)
-
+library(scales)
+library(dplyr)
 renv::snapshot()
 renv::restore()
 
@@ -68,4 +71,41 @@ ggplot(frota_sp_ajustada, aes(x = ano, y = automoveis)) +
 
 
 
+
+frota_sp_long <- frota_sp_ajustada %>%
+  pivot_longer(cols = c(automoveis, motocicletas, caminhoes), 
+               names_to = "tipo_veiculo", 
+               values_to = "quantidade")
+
+
+ggplot(frota_sp_long, aes(x = ano, y = quantidade, color = tipo_veiculo)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Frota de Veículos por tipo",
+       x = "Ano",
+       y = "Frota de Veículos",
+       color = "Tipo de Veículo") +
+  scale_y_continuous(labels = number_format(big.mark = ".")) +
+  theme_minimal()
+
+
+frota_sp_ajustada %>% dplyr::select(automoveis) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+
+
+# Carregar o pacote dplyr
+library(dplyr)
+
+# Calcular a média, desvio padrão e quantis (25% e 75%)
+estatisticas <- frota_sp_ajustada %>%
+  summarise(
+    media = mean(motocicletas, na.rm = TRUE),
+    desvio_padrao = sd(motocicletas, na.rm = TRUE),
+    quantil_25 = quantile(motocicletas, probs = 0.25, na.rm = TRUE),
+    quantil_75 = quantile(motocicletas, probs = 0.75, na.rm = TRUE)
+  )
+
+# Visualizar as estatísticas
+print(estatisticas) %>% kable()
+
+kable(estatisticas)
 

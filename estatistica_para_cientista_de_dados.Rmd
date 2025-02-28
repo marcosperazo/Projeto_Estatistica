@@ -10,6 +10,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 tinytex::install_tinytex(force = TRUE)
+options(scipen = 999)
 ```
 
 ### 1 - Plataforma RStudio instalada localmente
@@ -56,12 +57,16 @@ library(summarytools)
 install.packages('dlookr')
 install.packages('readxl')
 install.packages('knitr')
+install.packages('scales')
+install.packages('dplyr')
 ```
 
 ```{r importando outras bibliotecas, echo = TRUE}
 library(dlookr)
 library(readxl)
 library(knitr)
+library(scales)
+library(dplyr)
 ```
 
 ```{r frota, echo=FALSE}
@@ -100,18 +105,58 @@ frota_sp_ajustada <- frota_sp %>%
 kable(head(frota_sp_ajustada))
 ```
 
+```{r Gráfico da frota de automóveis, motocicletas e caminhões, echo=FALSE}
+frota_sp_long <- frota_sp_ajustada %>%
+  pivot_longer(cols = c(automoveis, motocicletas, caminhoes), 
+               names_to = "tipo_veiculo", 
+               values_to = "quantidade")
 
 
+ggplot(frota_sp_long, aes(x = ano, y = quantidade, color = tipo_veiculo)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Frota de Veículos por tipo",
+       x = "Ano",
+       y = "Frota de Veículos",
+       color = "Tipo de Veículo") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal()
+```
 
+### 8 - Escolha uma variável de seu banco de dados e calcule
 
+```{r desc variavel automóveis com summarise, echo = TRUE}
+estatisticas <- frota_sp_ajustada %>%
+  summarise(
+    Média = mean(motocicletas, na.rm = TRUE),
+    `Desvio Padrão` = sd(motocicletas, na.rm = TRUE),
+    `Quantil 25%` = quantile(motocicletas, probs = 0.25, na.rm = TRUE),
+    `Quantil 75%` = quantile(motocicletas, probs = 0.75, na.rm = TRUE)
+  )
 
+kable(estatisticas, format = "markdown", digits = 2, 
+      caption = "Estatísticas Descritivas para Motocicletas")
+```
 
-### 8 - Escolha uma variável de seu banco de dados e calcule:
-a média para todos os eventos
-o desvio padrão
-os quantis: 25% e 75%
 ### 9 - Utilizando o pacote summarytools (função descr), descreva estatisticamente a sua base de dados.
+
+```{r desc variavel automóveis, echo = TRUE}
+frota_sp_ajustada %>% dplyr::select(automoveis) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+```
+
+```{r desc variavel motocicletas, echo = TRUE}
+frota_sp_ajustada %>% dplyr::select(motocicletas) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+```
+
+```{r desc variavel caminhões, echo = TRUE}
+frota_sp_ajustada %>% dplyr::select(caminhoes) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+```
+
 ### 10 - Escolha uma variável e crie um histograma. Justifique o número de bins usados. A distribuição dessa variável se aproxima de uma "normal"? Justifique.
+
+
+
+
 ### 11 - Calcule a correlação entre todas as variáveis dessa base. Quais são as 3 pares de variáveis mais correlacionadas?
 ### 12 - Crie um scatterplot entre duas variáveis das resposta anterior. Qual a relação da imagem com a correlação entre as variáveis.
 ### 13 - Crie um gráfico linha de duas das variáveis. Acrescente uma legenda e rótulos nos eixos.
