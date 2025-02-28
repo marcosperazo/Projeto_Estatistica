@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+estatistica_para_cientista_de_dados.pdf
 # Ignorar a pasta 'saida'
 saida/

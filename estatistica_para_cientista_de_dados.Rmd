@@ -48,6 +48,7 @@ install.packages('dlookr')
 install.packages('summarytools')
 install.packages('readxl')
 install.packages('knitr')
+install.packages('ggplot2')
 
 ```
 
@@ -57,13 +58,45 @@ library(dlookr)
 library(summarytools)
 library(readxl)
 library(knitr)
+library(ggplot2)
 ```
 
 
+```{r visualizando frota}
 kable(head(frota))
+```
 
 ### 6 - Escolha outros pacotes necessários, aponte sua necessidade e instale e carregue (mostrando o código necessário).
 ### 7 - Aplique uma função em R que seja útil para sua análise e mostre.
+
+```{r Frota do estado de São Paulo, echo=TRUE}
+frota_sp <- frota %>%
+  filter(mes == 12, sigla_uf == "SP") %>%
+  select(-mes, -sigla_uf)
+```
+
+
+```{r visualizando frota}
+kable(head(frota_sp))
+```
+
+install.packages("ggplot2")
+library(ggplot2)
+
+
+
+
+
+
+ggplot(data = frota_sp, aes(x = factor(ano), y = tipo_veiculo, fill = quantidade_total)) +
+  geom_tile() +
+  labs(title = "Distribuição de Quantidade por Tipo de Veículo e Ano",
+       x = "Ano",
+       y = "Tipo de Veículo",
+       fill = "Quantidade Total") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ### 8 - Escolha uma variável de seu banco de dados e calcule:
 a média para todos os eventos
 o desvio padrão
