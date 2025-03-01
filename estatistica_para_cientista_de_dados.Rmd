@@ -69,7 +69,7 @@ library(scales)
 library(dplyr)
 ```
 
-```{r frota, echo=FALSE}
+```{r frota, echo=TRUE}
 kable(head(frota))
 ```
 
@@ -81,7 +81,7 @@ frota_sp <- frota %>%
   select(-mes, -sigla_uf)
 ```
 
-```{r frota de SP, echo=FALSE}
+```{r frota de SP, echo=TRUE}
 kable(head(frota_sp))
 ```
 
@@ -101,7 +101,7 @@ frota_sp_ajustada <- frota_sp %>%
   )
 ```
 
-```{r frota de SP ajustada , echo=FALSE}
+```{r frota de SP ajustada , echo=TRUE}
 kable(head(frota_sp_ajustada))
 ```
 
@@ -141,27 +141,65 @@ kable(estatisticas, format = "markdown", digits = 2,
 ### 9 - Utilizando o pacote summarytools (função descr), descreva estatisticamente a sua base de dados.
 
 ```{r desc variavel automóveis, echo = TRUE}
-frota_sp_ajustada %>% dplyr::select(automoveis) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+frota_sp_ajustada %>% dplyr::select(automoveis) %>% 
+  summarytools::descr(., style = 'rmarkdown') %>% kable()
 ```
 
 ```{r desc variavel motocicletas, echo = TRUE}
-frota_sp_ajustada %>% dplyr::select(motocicletas) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+frota_sp_ajustada %>% dplyr::select(motocicletas) %>% 
+  summarytools::descr(., style = 'rmarkdown') %>% kable()
 ```
 
 ```{r desc variavel caminhões, echo = TRUE}
-frota_sp_ajustada %>% dplyr::select(caminhoes) %>% summarytools::descr(., style = 'rmarkdown') %>% kable()
+frota_sp_ajustada %>% dplyr::select(caminhoes) %>% 
+  summarytools::descr(., style = 'rmarkdown') %>% kable()
 ```
 
 ### 10 - Escolha uma variável e crie um histograma. Justifique o número de bins usados. A distribuição dessa variável se aproxima de uma "normal"? Justifique.
 
+```{r Histograma da frota de motocicletas no Brasil, echo=TRUE}
+frota_motocicletas_br <- frota %>%
+  filter(mes == 12, tipo_veiculo == 'motocicleta') %>%
+  select(-mes, -tipo_veiculo)
+frota_motocicletas_br <- frota_motocicletas_br %>% rename(motocicletas = quantidade)
+frota_motocicletas_br %>% dplyr::select(motocicletas) %>% 
+  ggplot(aes(x = motocicletas)) + geom_histogram(aes(y = after_stat(density)), bins = 7)
+```
 
+```{r desc variavel motocicletas no Brasil, echo = TRUE}
+frota_motocicletas_br %>% dplyr::select(motocicletas) %>% 
+  summarytools::descr(., style = 'rmarkdown') %>% kable()
+```
 
+A distribuição é exponencial para a variável motocicletas, e tanto a Regra Freedman-Diaconis, quanto a Regra de Sturge, determinaram uma quantidade de bins muito alta. Por experimentação, defini em 7 a quantidade de bins ideal para o histograma.
 
 ### 11 - Calcule a correlação entre todas as variáveis dessa base. Quais são as 3 pares de variáveis mais correlacionadas?
+
+```{r Correlacao de variaveis motocicletas e ano, echo = TRUE}
+kable(cor(frota_motocicletas_br %>% dplyr::select(motocicletas, ano)))
+```
+
 ### 12 - Crie um scatterplot entre duas variáveis das resposta anterior. Qual a relação da imagem com a correlação entre as variáveis.
+
+```{r analisando scatter entre variaveis correlacionadas motocicletas e ano, echo = TRUE}
+frota_motocicletas_br %>% dplyr::select(motocicletas, ano) %>% 
+  ggplot(aes(x=motocicletas, y = ano)) + geom_point() + geom_smooth(method = "lm", se = FALSE) + theme_classic()
+```
+
 ### 13 - Crie um gráfico linha de duas das variáveis. Acrescente uma legenda e rótulos nos eixos.
 
-Assim que terminar, salve o seu arquivo PDF e poste no Moodle. Utilize o seu nome para nomear o arquivo, identificando também a disciplina no seguinte formato: “nomedoaluno_nomedadisciplina_pd.PDF”.
+```{r Gráfico linha das variáveis motocicletas e ano, echo=TRUE}
+ggplot(frota_motocicletas_br, aes(x = ano, y = motocicletas)) +
+  geom_line(color = "blue") +
+  geom_point() +
+  labs(
+    title = "Frota de Motocicletas por Ano",
+    x = "Ano",
+    y = "Frota de Motocicletas",
+    color = "Legenda"
+  ) +
+  theme_minimal()
+```
 
 
 

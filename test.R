@@ -109,3 +109,27 @@ print(estatisticas) %>% kable()
 
 kable(estatisticas)
 
+
+
+frota_motocicletas_br <- frota %>%
+  filter(mes == 12, tipo_veiculo == 'motocicleta') %>%
+  select(-mes, -tipo_veiculo)
+frota_motocicletas_br
+frota_motocicletas_br %>% dplyr::select(quantidade) %>% ggplot(aes(x = quantidade)) + geom_histogram(aes(y = after_stat(density)), bins = 7)
+
+
+frota_motocicletas_br <- frota_motocicletas_br %>%
+  rename(motocicletas = quantidade)
+frota_motocicletas_br
+
+
+ggplot(frota_motocicletas_br, aes(x = ano, y = motocicletas)) +
+  geom_line(color = "blue") +
+  geom_point() +
+  labs(
+    title = "Frota de Motocicletas por Ano",
+    x = "Ano",
+    y = "Frota de Motocicletas",
+    color = "Legenda"
+  ) +
+  theme_minimal()
