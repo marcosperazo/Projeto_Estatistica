@@ -179,12 +179,16 @@ A distribuição é exponencial para a variável motocicletas, e tanto a Regra F
 kable(cor(frota_motocicletas_br %>% dplyr::select(motocicletas, ano)))
 ```
 
+A base escolhida não me permitiu utilizar outras variáveis.
+
 ### 12 - Crie um scatterplot entre duas variáveis das resposta anterior. Qual a relação da imagem com a correlação entre as variáveis.
 
 ```{r analisando scatter entre variaveis correlacionadas motocicletas e ano, echo = TRUE}
 frota_motocicletas_br %>% dplyr::select(motocicletas, ano) %>% 
   ggplot(aes(x=motocicletas, y = ano)) + geom_point() + geom_smooth(method = "lm", se = FALSE) + theme_classic()
 ```
+
+Um scatterplot (gráfico de dispersão) é uma ferramenta visual para observar a relação entre as variáveis motocicletas e ano, o scatterplot fornece uma representação visual, que ajuda a identificar padrões ou tendências nos dados. A correlação, por outro lado, é uma medida numérica que quantifica a força e a direção da relação linear entre duas variáveis. No caso as as variáveis motocicletas e ano têm uma correlação positiva, porém fraca.
 
 ### 13 - Crie um gráfico linha de duas das variáveis. Acrescente uma legenda e rótulos nos eixos.
 
